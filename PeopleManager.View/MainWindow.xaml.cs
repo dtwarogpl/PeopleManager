@@ -15,9 +15,6 @@ using PeopleManager.ViewModel.Abstractions;
             DataContext = viewModel;
         }
 
-        private void DataGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-
-        }
+      
     }
 }
