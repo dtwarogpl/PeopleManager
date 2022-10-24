@@ -4,7 +4,7 @@ namespace PeopleManager.ViewModel.Abstractions
 {
     public interface IViewModel
     {
-        Task Initialize();
+       
     }
 
 }

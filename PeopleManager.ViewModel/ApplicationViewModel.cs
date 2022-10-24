@@ -63,6 +63,8 @@ namespace PeopleManager.ViewModel
         public IAsyncCommand LoadPeopleAsyncCommand { get; private set; }
 
    
-        
+       
+
+      
     }
 }
