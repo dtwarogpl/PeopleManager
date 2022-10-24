@@ -63,14 +63,6 @@ namespace PeopleManager.ViewModel
         public IAsyncCommand LoadPeopleAsyncCommand { get; private set; }
 
    
-        public async Task Initialize()
-        {
-            FetchPeople();
-        }
-
-        private void FetchPeople()
-        {
-           
-        }
+        
     }
 }
