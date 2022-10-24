@@ -10,7 +10,6 @@
     <Folder Include="Helpers\" />
     <Folder Include="Models\" />
     <Folder Include="Automapper\" />
-    <Folder Include="ValidationRules\" />
   </ItemGroup>
 
   <ItemGroup>

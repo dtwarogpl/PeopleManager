@@ -57,7 +57,7 @@
                                  Mode="TwoWay" 
                                  ValidatesOnDataErrors="True">
                             <Binding.ValidationRules>
-                                <validationRules:NameValidationRule />
+                                <validationRules:NonEmptyStringValidationRule />
                             </Binding.ValidationRules>
                         </Binding>
                     </DataGridTextColumn.Binding>

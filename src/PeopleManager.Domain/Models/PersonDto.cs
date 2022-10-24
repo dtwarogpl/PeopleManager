@@ -5,7 +5,7 @@ namespace PeopleManager.Domain.Models;
 
 public record Person
 {
-    [MaxLength(5)]
+   
     public string FirstName { get; init; }
     public string LastName { get; init; }
     public string StreetName { get; init; }
