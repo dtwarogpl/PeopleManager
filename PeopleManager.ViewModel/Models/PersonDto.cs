@@ -9,7 +9,7 @@ namespace PeopleManager.ViewModel.Models;
 
 public class PersonDto : INotifyPropertyChanged
 {
-    private record SnapShotDto(string FirstName, string LastName,string StreetName, string HouseNumber, string ApartmentNumber, string PostalCode, string Town, string PhoneNumber, DateOnly DateOfBirth)
+    private record SnapShotDto(string FirstName, string LastName,string StreetName, string HouseNumber, string ApartmentNumber, string PostalCode, string Town, string PhoneNumber, DateTime DateOfBirth)
     {
        public bool Equals(PersonDto dto)
         {
@@ -22,7 +22,7 @@ public class PersonDto : INotifyPropertyChanged
                    string.Equals(PostalCode, dto.PostalCode) &&
                    string.Equals(Town, dto.Town) &&
                    string.Equals(PhoneNumber, dto.PhoneNumber) &&
-                   DateOfBirth.Equals(DateOfBirth);
+                   DateOfBirth.Equals(dto.DateOfBirth);
         }
     }
 
@@ -34,7 +34,7 @@ public class PersonDto : INotifyPropertyChanged
     private string _postalCode;
     private string _town;
     private string _phoneNumber;
-    private DateOnly _dateOfBirth;
+    private DateTime _dateOfBirth;
 
 
     private SnapShotDto? SnapShot { get; set; }
@@ -99,7 +99,7 @@ public class PersonDto : INotifyPropertyChanged
         set => SetField(ref _phoneNumber, value);
     }
 
-    public DateOnly DateOfBirth
+    public DateTime DateOfBirth
     {
         get => _dateOfBirth;
         set
@@ -114,9 +114,8 @@ public class PersonDto : INotifyPropertyChanged
     public int? Age => CalculateAge();
     private int? CalculateAge()
     {
-       
         var now = DateTime.Today;
-        int age = now.Year - DateOfBirth.Year;
+        var age = now.Year - DateOfBirth.Year;
         if (now.Month < DateOfBirth.Month || (now.Month == DateOfBirth.Month && now.Day < DateOfBirth.Day))
             age--;
         return age;

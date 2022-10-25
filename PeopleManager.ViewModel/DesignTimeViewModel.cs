@@ -32,7 +32,7 @@ public class DesignTimeViewModel : INotifyPropertyChanged
             .RuleFor(x => x.PostalCode, y => y.Address.ZipCode())
             .RuleFor(x => x.StreetName, y => y.Address.StreetName())
             .RuleFor(x => x.Town, y => y.Address.City())
-            .RuleFor(x => x.DateOfBirth, y => y.Date.PastDateOnly());
+            .RuleFor(x => x.DateOfBirth, y => y.Date.Past(8));
       
         for (int i = 0; i < 100; i++)
         {
