@@ -9,6 +9,23 @@ namespace PeopleManager.ViewModel.Models;
 
 public class PersonDto : INotifyPropertyChanged
 {
+    private record SnapShotDto(string FirstName, string LastName,string StreetName, string HouseNumber, string ApartmentNumber, string PostalCode, string Town, string PhoneNumber, DateOnly DateOfBirth)
+    {
+       public bool Equals(PersonDto dto)
+        {
+            return string.Equals(FirstName, dto.FirstName) &&
+                   string.Equals(LastName, dto.LastName) &&
+                   string.Equals(StreetName, dto.StreetName) &&
+                   string.Equals(HouseNumber, dto.HouseNumber) &&
+                   string.Equals(ApartmentNumber, dto.ApartmentNumber) &&
+                   string.Equals(PostalCode, dto.PostalCode) &&
+                   string.Equals(PostalCode, dto.PostalCode) &&
+                   string.Equals(Town, dto.Town) &&
+                   string.Equals(PhoneNumber, dto.PhoneNumber) &&
+                   DateOfBirth.Equals(DateOfBirth);
+        }
+    }
+
     private string _firstName;
     private string _lastName;
     private string _streetName;
@@ -19,10 +36,25 @@ public class PersonDto : INotifyPropertyChanged
     private string _phoneNumber;
     private DateOnly _dateOfBirth;
 
+
+    private SnapShotDto? SnapShot { get; set; }
+
+    public void CreateSnapShot()
+    {
+        SnapShot = new(_firstName, _lastName, _streetName, _houseNumber, _apartmentNumber, _postalCode, _town,
+            _phoneNumber, _dateOfBirth);
+    }
+
+    public bool HasBeenModified() => SnapShot != null && !SnapShot.Equals(this);
+
+
     public string FirstName
     {
         get => _firstName;
-        set => SetField(ref _firstName, value);
+        set
+        {
+            SetField(ref _firstName, value);
+        }
     }
 
     public string LastName
@@ -92,16 +124,20 @@ public class PersonDto : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
+   
 
     protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;
         OnPropertyChanged(propertyName);
+       
         return true;
     }
 }

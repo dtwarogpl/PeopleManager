@@ -12,7 +12,6 @@ namespace PeopleManager.View;
 
 public class DesignTimeViewModel : INotifyPropertyChanged
 {
-    public Visibility ProgressIndicatorVisibility => Visibility.Collapsed;
     public ObservableCollection<PersonDto> People { get; set; } = new();
 
     public DesignTimeViewModel()

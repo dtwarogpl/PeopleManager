@@ -9,6 +9,7 @@
         xmlns:local="clr-namespace:PeopleManager.View"
         xmlns:view="clr-namespace:PeopleManager.View;assembly=PeopleManager.ViewModel"
         xmlns:validationRules="clr-namespace:PeopleManager.ViewModel.ValidationRules;assembly=PeopleManager.ViewModel"
+        xmlns:converters="clr-namespace:PeopleManager.View.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1200"
         d:DataContext="{d:DesignInstance Type=view:DesignTimeViewModel, IsDesignTimeCreatable=True}">
@@ -18,7 +19,8 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Window.Resources>
-      
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:BoolToVisibilityConverterInverted x:Key="BoolToVisibilityConverterInverted" />
 
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="14"/>
@@ -29,7 +31,8 @@
         </Style>
 
         <Style TargetType="Button">
-            <Setter Property="Width" Value="100"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Height" Value="80"/>
             <Setter Property="Margin" Value="5"/>
         </Style>
     
@@ -45,8 +48,27 @@
          
             <RowDefinition Height="0.2*"/>
         </Grid.RowDefinitions>
-        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2"  Grid.Row="1" Panel.ZIndex="1" Visibility="{Binding ProgressIndicatorVisibility}"/>
-        <Button Grid.Row="2"  Command="{Binding CountUrlBytesCommand}">Test</Button>
+        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2"  Grid.Row="1" Panel.ZIndex="1" Visibility="{Binding LoadPeopleAsyncCommand.Running,
+    Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <StackPanel Grid.Row="2" Height="100" >
+            <Button  Command="{Binding SaveCommand}">
+                <Button.Content>
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Visibility="{Binding SaveCommand.Running,
+    Converter={StaticResource BoolToVisibilityConverterInverted}}">
+                            <fa:ImageAwesome Icon="FloppyOutline" Margin="10,0,10,0"  Width="20" SpinDuration="2"    />
+                            <TextBlock>Zapisz</TextBlock>
+                        </StackPanel>
+                        <fa:ImageAwesome Icon="Spinner" Margin="10,0,0,0"  Spin="True" Width="20" SpinDuration="2"  Visibility="{Binding SaveCommand.Running,
+    Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                    </StackPanel>
+
+                </Button.Content>
+
+            </Button>
+        </StackPanel>
+        
         <DataGrid Grid.Row="1" ItemsSource="{Binding People}" AutoGenerateColumns="false" AlternatingRowBackground="#FFECECEC">
          
             <DataGrid.Columns>
@@ -230,8 +252,8 @@
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate> 
                         <DataTemplate>
-                            <DatePicker SelectedDate="{Binding Path=DateOfBirth}">
-
+                            <DatePicker SelectedDate="{Binding Path=DateOfBirth, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True 
+            }">
                             </DatePicker>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>

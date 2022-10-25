@@ -53,4 +53,9 @@ public class XmlDataRepository  : IPeopleRepository
 
       return data;
     }
+
+    public async Task SavePeopleAsync(IEnumerable<Person> people)
+    {
+        await Task.Delay(2000);
+    }
 }

@@ -21,8 +21,8 @@ namespace PeopleManager.ViewModel
     {
 
         private readonly IPeopleRepository _peopleRepository;
-        protected Visibility _progressIndicatorVisibility = Visibility.Visible;
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
+        private ObservableCollection<PersonDto> _people;
 
         public ApplicationViewModel(IPeopleRepository repository, IMapper mapper)
         {
@@ -34,21 +34,26 @@ namespace PeopleManager.ViewModel
                 var data=  await _peopleRepository.GetPeopleAsync();
                 var peopleSource = _mapper.Map<List<PersonDto>> (data.ToList());
                 People = new ObservableCollection<PersonDto>(peopleSource);
-                OnPropertyChanged(nameof(People));
-                ProgressIndicatorVisibility = Visibility.Collapsed;
-            });
-        }
+                foreach (var person in People)
+                {
+                    person.CreateSnapShot();
+                }   
+               
+            }, ()=>true);
 
-        public Visibility ProgressIndicatorVisibility
-        {
-            get => _progressIndicatorVisibility;
-            private set
+            SaveCommand = new AsyncCommand(async () =>
             {
-                if (value == _progressIndicatorVisibility) return;
-                _progressIndicatorVisibility = value;
-                OnPropertyChanged();
-            }
+                await _peopleRepository.SavePeopleAsync(Enumerable.Empty<Person>());
+                foreach (var person in People!)
+                {
+                    person.CreateSnapShot();
+                }
+            },()=>
+            {
+                return People!=null && People.Any(x=>x.HasBeenModified());
+            }); //todo
         }
+        
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -57,10 +62,20 @@ namespace PeopleManager.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public ObservableCollection<PersonDto> People { get; set; }
+        public ObservableCollection<PersonDto>? People
+        {
+            get => _people;
+            set
+            {
+                if (Equals(value, _people)) return;
+                _people = value;
+                OnPropertyChanged();
+            }
+        }
 
 
         public IAsyncCommand LoadPeopleAsyncCommand { get; private set; }
+        public IAsyncCommand SaveCommand { get; private set; }
 
    
        
