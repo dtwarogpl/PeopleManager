@@ -15,7 +15,7 @@ public class XmlDataRepository  : IPeopleRepository
         {
             new Person()
             {
-                DateOfBirth = new DateTime(1992, 11, 5),
+                DateOfBirth = new DateOnly(1992, 11, 5),
                 FirstName = "Dominik",
                 LastName = "Twaróg",
                 StreetName = "Piłsudskiego",
@@ -27,7 +27,7 @@ public class XmlDataRepository  : IPeopleRepository
             },
             new Person()
             {
-                DateOfBirth = new DateTime(1992, 11, 5),
+                DateOfBirth = new DateOnly(1992, 11, 5),
                 FirstName = "Natalia",
                 LastName = "Twaróg",
                 StreetName = "Piłsudskiego",
@@ -39,7 +39,7 @@ public class XmlDataRepository  : IPeopleRepository
             },
             new Person()
             {
-                DateOfBirth = new DateTime(1992, 11, 5),
+                DateOfBirth = new DateOnly(1992, 11, 5),
                 FirstName = "Ignacy",
                 LastName = "Twaróg",
                 StreetName = "Piłsudskiego",

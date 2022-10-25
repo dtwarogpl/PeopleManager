@@ -14,6 +14,6 @@ public record Person
     public string PostalCode { get; init; }
     public string Town { get; init; }
     public string PhoneNumber { get; init; }
-    public DateTime DateOfBirth { get; init; }
+    public DateOnly DateOfBirth { get; init; }
    
 }
