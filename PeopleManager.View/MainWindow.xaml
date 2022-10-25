@@ -22,17 +22,8 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:BoolToVisibilityConverterInverted x:Key="BoolToVisibilityConverterInverted" />
 
-        <Style TargetType="TextBlock">
-            <Setter Property="FontSize" Value="14"/>
-        </Style>
-
-        <Style TargetType="TextBox">
-            <Setter Property="FontSize" Value="14"/>
-        </Style>
-
-        <Style TargetType="Button">
+        <Style TargetType="Button" x:Key="MainBtn">
             <Setter Property="Width" Value="200"/>
-            <!--<Setter Property="Height" Value="80"/>-->
             <Setter Property="Margin" Value="5"/>
         </Style>
     
@@ -45,13 +36,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
             <RowDefinition Height="*"/>
-         
             <RowDefinition Height="0.2*"/>
         </Grid.RowDefinitions>
-        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2"  Grid.Row="1" Panel.ZIndex="1" Visibility="{Binding LoadPeopleAsyncCommand.Running,
-    Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2"  Grid.Row="1" Panel.ZIndex="1" Visibility="{Binding LoadPeopleAsyncCommand.Running,Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2"  Grid.Row="1" Panel.ZIndex="1" Visibility="{Binding DiscardChangesCommand.Running,Converter={StaticResource BoolToVisibilityConverter}}"/>
         <StackPanel Grid.Row="2" Height="100" Orientation="Horizontal" HorizontalAlignment="Center" >
-            <Button  Command="{Binding DiscardChangesCommand}">
+            <Button Style="{StaticResource MainBtn}" Command="{Binding DiscardChangesCommand}">
                 <Button.Content>
                     <StackPanel Orientation="Vertical">
                         <StackPanel Visibility="{Binding DiscardChangesCommand.Running,
@@ -67,7 +57,7 @@
                 </Button.Content>
 
             </Button>
-            <Button  Command="{Binding SaveCommand}">
+            <Button Style="{StaticResource MainBtn}" Command="{Binding SaveCommand}">
                 <Button.Content>
                     <StackPanel Orientation="Vertical">
                         <StackPanel Visibility="{Binding SaveCommand.Running,
@@ -85,7 +75,9 @@
             </Button>
         </StackPanel>
         
-        <DataGrid Grid.Row="1" ItemsSource="{Binding People}" AutoGenerateColumns="false" AlternatingRowBackground="#FFECECEC">
+        <DataGrid Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding People}" AutoGenerateColumns="false" AlternatingRowBackground="#FFECECEC"
+                 
+                  >
          
             <DataGrid.Columns>
 
@@ -276,6 +268,24 @@
                 </DataGridTemplateColumn>
 
                 <DataGridTextColumn Header="Age" Binding="{Binding Path=Age}"></DataGridTextColumn>
+
+                <DataGridTemplateColumn Header="Options" Width="70">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <Button Width="20" 
+                                    Command="{Binding Path=DeleteCommand,       
+ RelativeSource= {RelativeSource FindAncestor,
+  AncestorType={x:Type DataGrid}}}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Button.Content>
+                                        <fa:ImageAwesome  Icon="Trash" Margin="2"   SpinDuration="2" Foreground="#FFC73D3D"    />
+
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
             </DataGrid.Columns>
         </DataGrid>
