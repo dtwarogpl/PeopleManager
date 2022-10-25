@@ -60,7 +60,7 @@ namespace PeopleManager.ViewModel
             }, () =>
             {
                 if (CurrentStateIsEqualToSnapShoot()) return false;
-                return (People.Any(x => x.HasBeenModified()) || Modified.Count > 0);
+                return (People.Any(x => x.HasBeenModified()) || Modified.Count > 0 || Removed.Count>0);
             });
 
             DeletePersonCommand = new AsyncCommand(async () =>
@@ -100,33 +100,24 @@ namespace PeopleManager.ViewModel
 
         private void CollectionChangedMethod(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            //different kind of changes that may have occurred in collection
-            if (e.Action == NotifyCollectionChangedAction.Add)
+            switch (e.Action)
             {
-                if (e.NewItems is null) return;
+                case NotifyCollectionChangedAction.Add when e.NewItems is null:
+                    return;
+                case NotifyCollectionChangedAction.Add:
+                    Modified.AddRange(e.NewItems!.Cast<PersonDto>().Where(item => item is not null));
+                    break;
+                case NotifyCollectionChangedAction.Remove when e.OldItems is null:
+                    return;
+                case NotifyCollectionChangedAction.Remove:
+                    Removed.AddRange(e.OldItems!.Cast<PersonDto>().Where(item => item is not null));
+                    break;
+            }
+        }
 
-                foreach (PersonDto item in e.NewItems)
-                {
-                    if (item is not null)
-                    {
-                        Modified.Add(item);
-                    }
-                }
-            }
-           
-            if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                if (e.OldItems is null) return;
-              
-                foreach (PersonDto item in e.OldItems)
-                {
-                    if (item is not null)
-                    {
-                        Removed.Add(item);  
-                    }
-                }
-            }
-           
+        private void LoadItems(NotifyCollectionChangedEventArgs e, List<PersonDto> destination)
+        {
+            destination.AddRange(e.NewItems!.Cast<PersonDto>().Where(item => item is not null));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -156,10 +147,7 @@ namespace PeopleManager.ViewModel
 
         private void DeleteSelected()
         {
-            if (null != SelectedItem)
-            {
-                People?.Remove(SelectedItem);
-            }
+            People.Remove(SelectedItem);
         }
 
         private PersonDto _selectedItem;
@@ -169,7 +157,7 @@ namespace PeopleManager.ViewModel
             set
             {
                 _selectedItem = value;
-                OnPropertyChanged(nameof(SelectedItem));
+                OnPropertyChanged();
             }
         }
     }
