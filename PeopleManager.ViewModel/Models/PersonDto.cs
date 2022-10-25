@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
-using System.Xml.Linq;
+using PeopleManager.Domain.Models;
+using PeopleManager.ViewModel.Helpers;
 
 namespace PeopleManager.ViewModel.Models;
 
@@ -51,10 +53,7 @@ public class PersonDto : INotifyPropertyChanged
     public string FirstName
     {
         get => _firstName;
-        set
-        {
-            SetField(ref _firstName, value);
-        }
+        set => SetField(ref _firstName, value);
     }
 
     public string LastName
@@ -86,7 +85,7 @@ public class PersonDto : INotifyPropertyChanged
         get => _postalCode;
         set => SetField(ref _postalCode, value);
     }
-
+   
     public string Town
     {
         get => _town;
@@ -128,31 +127,35 @@ public class PersonDto : INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
-   
-
     protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;
         OnPropertyChanged(propertyName);
-       
+        OnPropertyChanged(nameof(IsCorrupted));
+        OnPropertyChanged(nameof(ModelValidationErrors));
         return true;
     }
-
-    public void DiscardChanges()
+    public bool IsCorrupted => GetValidationResults().Any();
+    public IEnumerable<string> ValidationResults => GetValidationResults()
+        .Where(x => !string.IsNullOrEmpty(x.ErrorMessage)).Select(x => x.ErrorMessage!);
+    private IEnumerable<ValidationResult> GetValidationResults()
     {
-        if (SnapShot is null) return;
+        var domainModel = new Person()
+        {
+            FirstName = FirstName,
+            LastName = LastName,
+            StreetName = StreetName,
+            HouseNumber = HouseNumber,
+            ApartmentNumber = ApartmentNumber,
+            PostalCode = PostalCode,
+            Town = Town,
+            PhoneNumber = PhoneNumber,
+            DateOfBirth = new DateOnly(DateOfBirth.Year, DateOfBirth.Month, DateOfBirth.Day),
+        };
 
-        FirstName = SnapShot.FirstName;
-        LastName = SnapShot.LastName;
-        StreetName = SnapShot.StreetName;
-        HouseNumber = SnapShot.HouseNumber;
-        ApartmentNumber = SnapShot.ApartmentNumber;
-        PostalCode = SnapShot.PostalCode;
-        PostalCode = SnapShot.PostalCode;
-        Town = SnapShot.Town;
-        PhoneNumber = SnapShot.PhoneNumber;
-        DateOfBirth = SnapShot.DateOfBirth;
+        var validationResult = domainModel.Validate();
+        return validationResult;
     }
+    public string? ModelValidationErrors => string.Join(Environment.NewLine, ValidationResults);
 }

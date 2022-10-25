@@ -19,6 +19,29 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Window.Resources>
+
+        <SolidColorBrush
+            x:Key="NeedAttentionColor"
+            x:Name="NeedAttentionColor"
+            Color="#D33F49" />
+
+        <SolidColorBrush
+            x:Key="AlertTextColor"
+            Color="#FEFEFF" />
+
+        <SolidColorBrush
+            x:Key="TextColor"
+            Color="#262730" />
+
+        <SolidColorBrush
+            x:Key="MainColor"
+            Color="#FEFEFF" />
+
+        <SolidColorBrush
+            x:Key="SuccessColor"
+            Color="#77BA99">
+        </SolidColorBrush>
+
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:BoolToVisibilityConverterInverted x:Key="BoolToVisibilityConverterInverted" />
 
@@ -26,7 +49,23 @@
             <Setter Property="Width" Value="200"/>
             <Setter Property="Margin" Value="5"/>
         </Style>
-    
+
+        <Style  TargetType="{x:Type DataGridRow}">
+            <Setter Property="MinHeight" Value="25" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Background" Value="{StaticResource MainColor}" />
+            <Style.Triggers>
+
+                <DataTrigger Binding="{Binding IsCorrupted}" Value="True">
+                    <Setter Property="Background" Value="{StaticResource NeedAttentionColor}" />
+                    <Setter Property="Foreground" Value="{StaticResource AlertTextColor}" />
+                  
+                </DataTrigger>
+               
+            
+            </Style.Triggers>
+        </Style>
+
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -34,12 +73,12 @@
          
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25"/>
+           
             <RowDefinition Height="*"/>
             <RowDefinition Height="0.2*"/>
         </Grid.RowDefinitions>
-        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2"  Grid.Row="1" Panel.ZIndex="1" Visibility="{Binding LoadPeopleAsyncCommand.Running,Converter={StaticResource BoolToVisibilityConverter}}"/>
-        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2"  Grid.Row="1" Panel.ZIndex="1" Visibility="{Binding DiscardChangesCommand.Running,Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2"  Grid.Row="0" Panel.ZIndex="1" Visibility="{Binding LoadPeopleAsyncCommand.Running,Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2"  Grid.Row="0" Panel.ZIndex="1" Visibility="{Binding DiscardChangesCommand.Running,Converter={StaticResource BoolToVisibilityConverter}}"/>
         <StackPanel Grid.Row="2" Height="100" Orientation="Horizontal" HorizontalAlignment="Center" >
             <Button Style="{StaticResource MainBtn}" Command="{Binding DiscardChangesCommand}">
                 <Button.Content>
@@ -74,11 +113,15 @@
 
             </Button>
         </StackPanel>
-        
-        <DataGrid Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding People}" AutoGenerateColumns="false" AlternatingRowBackground="#FFECECEC"
-                 
-                  >
-         
+
+        <DataGrid Grid.Row="0" SelectionMode="Single" ItemsSource="{Binding People}" AutoGenerateColumns="false" >
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <TextBlock Foreground="{StaticResource AlertTextColor}" FontSize="12"  Text="{Binding ModelValidationErrors}" TextWrapping="Wrap"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding IsCorrupted,Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+
             <DataGrid.Columns>
 
                 <DataGridTextColumn Header="First Name">
@@ -88,20 +131,10 @@
                                  UpdateSourceTrigger="PropertyChanged" 
                                  Mode="TwoWay" 
                                  ValidatesOnDataErrors="True">
-                            <Binding.ValidationRules>
-                                <validationRules:NonEmptyStringValidationRule />
-                            </Binding.ValidationRules>
+                          
                         </Binding>
                     </DataGridTextColumn.Binding>
-                    <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="Validation.HasError" Value="true">
-                                    <Setter Property="ToolTip" Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGridTextColumn.EditingElementStyle>
+                 
                 </DataGridTextColumn>
 
                 <DataGridTextColumn Header="Last Name">
@@ -111,20 +144,9 @@
                                  UpdateSourceTrigger="PropertyChanged" 
                                  Mode="TwoWay" 
                                  ValidatesOnDataErrors="True">
-                            <Binding.ValidationRules>
-                                <validationRules:NonEmptyStringValidationRule />
-                            </Binding.ValidationRules>
                         </Binding>
                     </DataGridTextColumn.Binding>
-                    <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="Validation.HasError" Value="true">
-                                    <Setter Property="ToolTip" Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGridTextColumn.EditingElementStyle>
+                   
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Street Name">
                     <DataGridTextColumn.Binding>
@@ -133,20 +155,9 @@
                                  UpdateSourceTrigger="PropertyChanged" 
                                  Mode="TwoWay" 
                                  ValidatesOnDataErrors="True">
-                            <Binding.ValidationRules>
-                                <validationRules:NonEmptyStringValidationRule />
-                            </Binding.ValidationRules>
                         </Binding>
                     </DataGridTextColumn.Binding>
-                    <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="Validation.HasError" Value="true">
-                                    <Setter Property="ToolTip" Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGridTextColumn.EditingElementStyle>
+                  
                 </DataGridTextColumn>
 
                 <DataGridTextColumn Header="House Number">
@@ -156,20 +167,10 @@
                                  UpdateSourceTrigger="PropertyChanged" 
                                  Mode="TwoWay" 
                                  ValidatesOnDataErrors="True">
-                            <Binding.ValidationRules>
-                                <validationRules:NonEmptyStringValidationRule />
-                            </Binding.ValidationRules>
+                           
                         </Binding>
                     </DataGridTextColumn.Binding>
-                    <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="Validation.HasError" Value="true">
-                                    <Setter Property="ToolTip" Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGridTextColumn.EditingElementStyle>
+                 
                 </DataGridTextColumn>
 
                 <DataGridTextColumn Header="Apartment">
@@ -190,20 +191,10 @@
                                  UpdateSourceTrigger="PropertyChanged" 
                                  Mode="TwoWay" 
                                  ValidatesOnDataErrors="True">
-                            <Binding.ValidationRules>
-                                <validationRules:NonEmptyStringValidationRule />
-                            </Binding.ValidationRules>
+                           
                         </Binding>
                     </DataGridTextColumn.Binding>
-                    <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="Validation.HasError" Value="true">
-                                    <Setter Property="ToolTip" Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGridTextColumn.EditingElementStyle>
+                  
                 </DataGridTextColumn>
 
                 <DataGridTextColumn Header="Town">
@@ -213,22 +204,11 @@
                                  UpdateSourceTrigger="PropertyChanged" 
                                  Mode="TwoWay" 
                                  ValidatesOnDataErrors="True">
-                            <Binding.ValidationRules>
-                                <validationRules:NonEmptyStringValidationRule />
-                            </Binding.ValidationRules>
+                           
                         </Binding>
                     </DataGridTextColumn.Binding>
-                    <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="Validation.HasError" Value="true">
-                                    <Setter Property="ToolTip" Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGridTextColumn.EditingElementStyle>
+                   
                 </DataGridTextColumn>
-
                 <DataGridTextColumn Header="Phone Number">
                     <DataGridTextColumn.Binding>
                         <Binding Path="PhoneNumber" 
@@ -236,20 +216,10 @@
                                  UpdateSourceTrigger="PropertyChanged" 
                                  Mode="TwoWay" 
                                  ValidatesOnDataErrors="True">
-                            <Binding.ValidationRules>
-                                <validationRules:NonEmptyStringValidationRule />
-                            </Binding.ValidationRules>
+                           
                         </Binding>
                     </DataGridTextColumn.Binding>
-                    <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="Validation.HasError" Value="true">
-                                    <Setter Property="ToolTip" Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGridTextColumn.EditingElementStyle>
+                   
                 </DataGridTextColumn>
 
                 <DataGridTemplateColumn Header ="Date of birth">
@@ -260,8 +230,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate> 
                         <DataTemplate>
-                            <DatePicker SelectedDate="{Binding Path=DateOfBirth, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True 
-            }">
+                            <DatePicker SelectedDate="{Binding Path=DateOfBirth, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }">
                             </DatePicker>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
@@ -278,8 +247,7 @@
  RelativeSource= {RelativeSource FindAncestor,
   AncestorType={x:Type DataGrid}}}" HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <Button.Content>
-                                        <fa:ImageAwesome  Icon="Trash" Margin="2"   SpinDuration="2" Foreground="#FFC73D3D"    />
-
+                                        <fa:ImageAwesome  Icon="Trash" Margin="2"   SpinDuration="2" Foreground="{StaticResource  NeedAttentionColor}"    />
                                     </Button.Content>
                                 </Button>
                             </StackPanel>

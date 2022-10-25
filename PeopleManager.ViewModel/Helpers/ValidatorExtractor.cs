@@ -1,14 +1,24 @@
 ﻿using System.Linq;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace PeopleManager.ViewModel.Helpers;
 
 public static class ValidatorExtractor
 {
-    public static T GetAttributeFrom<T>(this object instance, string propertyName) where T : Attribute
+    public static IEnumerable<ValidationResult> Validate(this object source)
     {
-        var attrType = typeof(T);
-        var property = instance.GetType().GetProperty(propertyName);
-        return (T)property.GetCustomAttributes(attrType, false).First();
+        if (source == null)
+            throw new ArgumentNullException("source");
+
+        var results = new List<ValidationResult>();
+        bool IsValid = Validator.TryValidateObject(source, new ValidationContext(source, null, null), results, true);
+        if (IsValid) yield break;
+        foreach (var result in results)
+        {
+            yield return result;
+        }
+
     }
 }

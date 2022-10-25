@@ -43,7 +43,15 @@ namespace PeopleManager.ViewModel
                 }
             },()=>
             {
-                return People!=null && People.Any(x=>x.HasBeenModified());
+                if (CurrentStateIsEqualToSnapShoot()) return false;
+
+                var somethingMidfied = People.Any(x => x.HasBeenModified());
+                var allHaveGoodState = People.All(y => !y.IsCorrupted);
+
+                var SomethingHasBeenAdded = Modified.Count>0;
+                var SomethingDeleted = Removed.Count > 0;
+
+                return allHaveGoodState && (somethingMidfied || SomethingHasBeenAdded || SomethingDeleted);
             });
 
             DiscardChangesCommand = new AsyncCommand(async () =>
@@ -51,8 +59,8 @@ namespace PeopleManager.ViewModel
                 await LoadPeopleAsync();
             }, () =>
             {
-                var result = (People.Any(x => x.HasBeenModified()) || Modified.Count > 0);
-                return result;
+                if (CurrentStateIsEqualToSnapShoot()) return false;
+                return (People.Any(x => x.HasBeenModified()) || Modified.Count > 0);
             });
 
             DeletePersonCommand = new AsyncCommand(async () =>
@@ -62,16 +70,21 @@ namespace PeopleManager.ViewModel
 
         }
 
-      
+        private bool CurrentStateIsEqualToSnapShoot()
+        {
+            return People.SequenceEqual(SnapShot);
+        }
 
+        public ObservableCollection<PersonDto> SnapShot = new();
         private async Task LoadPeopleAsync()
         {
-        
+            SnapShot.Clear();
             People?.Clear();
             Modified.Clear();
             var data = await _peopleRepository.GetPeopleAsync();
             var peopleSource = _mapper.Map<List<PersonDto>>(data.ToList());
             People = new ObservableCollection<PersonDto>(peopleSource);
+            SnapShot = new ObservableCollection<PersonDto>(peopleSource);
             foreach (var person in People)
             {
                 person.CreateSnapShot();
@@ -82,6 +95,7 @@ namespace PeopleManager.ViewModel
         }
 
         private List<PersonDto> Modified = new();
+        private List<PersonDto> Removed = new();
      
 
         private void CollectionChangedMethod(object? sender, NotifyCollectionChangedEventArgs e)
@@ -108,7 +122,7 @@ namespace PeopleManager.ViewModel
                 {
                     if (item is not null)
                     {
-                      Modified.Add(item);  
+                        Removed.Add(item);  
                     }
                 }
             }
