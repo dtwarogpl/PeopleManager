@@ -1,54 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using PeopleManager.Domain.Models;
 using PeopleManager.ViewModel.Helpers;
 
 namespace PeopleManager.ViewModel.Models;
 
-public class PersonDto : INotifyPropertyChanged
+public class PersonDto : ObservableDto
 {
-    private record SnapShotDto(string FirstName, string LastName,string StreetName, string HouseNumber, string ApartmentNumber, string PostalCode, string Town, string PhoneNumber, DateTime DateOfBirth)
-    {
-       public bool Equals(PersonDto dto)
-        {
-            return string.Equals(FirstName, dto.FirstName) &&
-                   string.Equals(LastName, dto.LastName) &&
-                   string.Equals(StreetName, dto.StreetName) &&
-                   string.Equals(HouseNumber, dto.HouseNumber) &&
-                   string.Equals(ApartmentNumber, dto.ApartmentNumber) &&
-                   string.Equals(PostalCode, dto.PostalCode) &&
-                   string.Equals(PostalCode, dto.PostalCode) &&
-                   string.Equals(Town, dto.Town) &&
-                   string.Equals(PhoneNumber, dto.PhoneNumber) &&
-                   DateOfBirth.Equals(dto.DateOfBirth);
-        }
-    }
-
-    private string _firstName;
-    private string _lastName;
-    private string _streetName;
-    private string _houseNumber;
     private string? _apartmentNumber;
-    private string _postalCode;
-    private string _town;
-    private string _phoneNumber;
     private DateTime _dateOfBirth;
+    private string _firstName;
+    private string _houseNumber;
+    private string _lastName;
+    private string _phoneNumber;
+    private string _postalCode;
+    private string _streetName;
+    private string _town;
 
-
-    private SnapShotDto? SnapShot { get; set; }
-
-    public void CreateSnapShot()
-    {
-        SnapShot = new(_firstName, _lastName, _streetName, _houseNumber, _apartmentNumber, _postalCode, _town,
-            _phoneNumber, _dateOfBirth);
-    }
-
-    public bool HasBeenModified() => SnapShot != null && !SnapShot.Equals(this);
-
+    private PersonDtoSnapshot? SnapShot { get; set; }
 
     public string FirstName
     {
@@ -85,7 +56,7 @@ public class PersonDto : INotifyPropertyChanged
         get => _postalCode;
         set => SetField(ref _postalCode, value);
     }
-   
+
     public string Town
     {
         get => _town;
@@ -103,14 +74,37 @@ public class PersonDto : INotifyPropertyChanged
         get => _dateOfBirth;
         set
         {
-            if (value.Equals(_dateOfBirth)) return;
-            _dateOfBirth = value;
-            OnPropertyChanged();
+            SetField(ref _dateOfBirth, value);
             OnPropertyChanged(nameof(Age));
         }
     }
 
     public int? Age => CalculateAge();
+
+    protected override List<string> AlwaysNotifyFieldNames => new()
+    {
+        nameof(IsCorrupted), nameof(ModelValidationErrors)
+    };
+
+    public bool IsCorrupted => GetValidationResults().Any();
+
+    public IEnumerable<string> ValidationResults => GetValidationResults()
+        .Where(x => !string.IsNullOrEmpty(x.ErrorMessage)).Select(x => x.ErrorMessage!);
+
+    public string? ModelValidationErrors => string.Join(Environment.NewLine, ValidationResults);
+
+    public void CreateSnapShot()
+    {
+        SnapShot = new PersonDtoSnapshot(_firstName, _lastName, _streetName, _houseNumber, _apartmentNumber,
+            _postalCode, _town,
+            _phoneNumber, _dateOfBirth);
+    }
+
+    public bool HasBeenModified()
+    {
+        return SnapShot != null && !SnapShot.Equals(this);
+    }
+
     private int? CalculateAge()
     {
         var now = DateTime.Today;
@@ -120,28 +114,9 @@ public class PersonDto : INotifyPropertyChanged
         return age;
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;
-        OnPropertyChanged(propertyName);
-        OnPropertyChanged(nameof(IsCorrupted));
-        OnPropertyChanged(nameof(ModelValidationErrors));
-        return true;
-    }
-    public bool IsCorrupted => GetValidationResults().Any();
-    public IEnumerable<string> ValidationResults => GetValidationResults()
-        .Where(x => !string.IsNullOrEmpty(x.ErrorMessage)).Select(x => x.ErrorMessage!);
     private IEnumerable<ValidationResult> GetValidationResults()
     {
-        var domainModel = new Person()
+        var domainModel = new Person
         {
             FirstName = FirstName,
             LastName = LastName,
@@ -151,11 +126,10 @@ public class PersonDto : INotifyPropertyChanged
             PostalCode = PostalCode,
             Town = Town,
             PhoneNumber = PhoneNumber,
-            DateOfBirth = new DateOnly(DateOfBirth.Year, DateOfBirth.Month, DateOfBirth.Day),
+            DateOfBirth = new DateOnly(DateOfBirth.Year, DateOfBirth.Month, DateOfBirth.Day)
         };
 
         var validationResult = domainModel.Validate();
         return validationResult;
     }
-    public string? ModelValidationErrors => string.Join(Environment.NewLine, ValidationResults);
 }
