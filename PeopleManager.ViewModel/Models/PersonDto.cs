@@ -140,4 +140,20 @@ public class PersonDto : INotifyPropertyChanged
        
         return true;
     }
+
+    public void DiscardChanges()
+    {
+        if (SnapShot is null) return;
+
+        FirstName = SnapShot.FirstName;
+        LastName = SnapShot.LastName;
+        StreetName = SnapShot.StreetName;
+        HouseNumber = SnapShot.HouseNumber;
+        ApartmentNumber = SnapShot.ApartmentNumber;
+        PostalCode = SnapShot.PostalCode;
+        PostalCode = SnapShot.PostalCode;
+        Town = SnapShot.Town;
+        PhoneNumber = SnapShot.PhoneNumber;
+        DateOfBirth = SnapShot.DateOfBirth;
+    }
 }

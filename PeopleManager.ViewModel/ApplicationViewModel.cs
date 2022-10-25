@@ -51,7 +51,18 @@ namespace PeopleManager.ViewModel
             },()=>
             {
                 return People!=null && People.Any(x=>x.HasBeenModified());
-            }); //todo
+            });
+
+            DiscardChangesCommand = new AsyncCommand(async () =>
+            {
+                foreach (var person in People!)
+                {
+                    person.DiscardChanges();
+                }
+            }, () =>
+            {
+                return People != null && People.Any(x => x.HasBeenModified());
+            });
         }
         
 
@@ -76,6 +87,7 @@ namespace PeopleManager.ViewModel
 
         public IAsyncCommand LoadPeopleAsyncCommand { get; private set; }
         public IAsyncCommand SaveCommand { get; private set; }
+        public IAsyncCommand DiscardChangesCommand { get; private set; }
 
    
        
