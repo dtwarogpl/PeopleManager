@@ -11,15 +11,14 @@ public class PersonDto : ObservableDto
 {
     private string? _apartmentNumber;
     private DateTime _dateOfBirth = DateTime.Today;
-    private string _firstName;
-    private string _houseNumber;
-    private string _lastName;
-    private string _phoneNumber;
-    private string _postalCode;
-    private string _streetName;
-    private string _town;
-
-    private PersonDtoSnapshot? SnapShot { get; set; }
+    private string? _firstName;
+    private string? _houseNumber;
+    private string? _lastName;
+    private string? _phoneNumber;
+    private string? _postalCode;
+    private string? _streetName;
+    private string? _town;
+   
 
     public string FirstName
     {
@@ -93,18 +92,6 @@ public class PersonDto : ObservableDto
 
     public string? ModelValidationErrors => string.Join(Environment.NewLine, ValidationResults);
 
-    public void CreateSnapShot()
-    {
-        SnapShot = new PersonDtoSnapshot(_firstName, _lastName, _streetName, _houseNumber, _apartmentNumber,
-            _postalCode, _town,
-            _phoneNumber, _dateOfBirth);
-    }
-
-    public bool HasBeenModified()
-    {
-        return SnapShot != null && !SnapShot.Equals(this);
-    }
-
     private int? CalculateAge()
     {
         var now = DateTime.Today;
@@ -113,16 +100,10 @@ public class PersonDto : ObservableDto
             age--;
         return age;
     }
-
-   
-
     public bool HasSamePropertiesAs(PersonDto other)
     {
         return _apartmentNumber == other._apartmentNumber && _dateOfBirth.Equals(other._dateOfBirth) && _firstName == other._firstName && _houseNumber == other._houseNumber && _lastName == other._lastName && _phoneNumber == other._phoneNumber && _postalCode == other._postalCode && _streetName == other._streetName && _town == other._town;
     }
-
-   
-
     public  PersonDto Duplicate()
     {
        return new PersonDto()
@@ -153,7 +134,6 @@ public class PersonDto : ObservableDto
             DateOfBirth = DateOfBirth
         };
 
-        var validationResult = domainModel.Validate();
-        return validationResult;
+        return domainModel.Validate();
     }
 }

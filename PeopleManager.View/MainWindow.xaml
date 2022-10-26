@@ -102,7 +102,7 @@
                         <StackPanel Visibility="{Binding SaveCommand.Running,
     Converter={StaticResource BoolToVisibilityConverterInverted}}">
                             <fa:ImageAwesome Icon="FloppyOutline" Margin="10,0,10,0"  Width="20" SpinDuration="2"    />
-                            <TextBlock>Zapisz</TextBlock>
+                            <TextBlock>Save</TextBlock>
                         </StackPanel>
                         <fa:ImageAwesome Icon="Spinner" Margin="10,0,0,0"  Spin="True" Width="20" SpinDuration="2"  Visibility="{Binding SaveCommand.Running,
     Converter={StaticResource BoolToVisibilityConverter}}" />
