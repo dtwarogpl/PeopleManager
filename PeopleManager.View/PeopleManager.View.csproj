@@ -31,8 +31,4 @@
     <ProjectReference Include="..\src\PeopleManager.Infrastructure\PeopleManager.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Converters\" />
-  </ItemGroup>
-
 </Project>
