@@ -10,7 +10,7 @@ namespace PeopleManager.ViewModel.Models;
 public class PersonDto : ObservableDto
 {
     private string? _apartmentNumber;
-    private DateTime _dateOfBirth;
+    private DateTime _dateOfBirth = DateTime.Today;
     private string _firstName;
     private string _houseNumber;
     private string _lastName;
@@ -150,7 +150,7 @@ public class PersonDto : ObservableDto
             PostalCode = PostalCode,
             Town = Town,
             PhoneNumber = PhoneNumber,
-            DateOfBirth = new DateOnly(DateOfBirth.Year, DateOfBirth.Month, DateOfBirth.Day)
+            DateOfBirth = DateOfBirth
         };
 
         var validationResult = domainModel.Validate();

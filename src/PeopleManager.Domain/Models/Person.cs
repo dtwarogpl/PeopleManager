@@ -28,7 +28,7 @@ public record Person
     [MinLength(3)]
     public string PhoneNumber { get; init; }
     [Required]
-    public DateOnly DateOfBirth { get; init; }
+    public DateTime DateOfBirth { get; init; }
 
 
 

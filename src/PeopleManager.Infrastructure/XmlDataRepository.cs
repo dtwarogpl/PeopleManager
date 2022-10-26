@@ -41,6 +41,7 @@ public class XmlDataRepository : IPeopleRepository
     public async Task SavePeopleAsync(List<Person> people)
     {
         var dataStorage = DataStorageModel.Create(people);
-        await _asyncDataFileHandler.FileWriteAsync(DataFilePath, _dataSerializer.Serialize(dataStorage));
+        var serialized = _dataSerializer.Serialize(dataStorage);
+        await _asyncDataFileHandler.FileWriteAsync(DataFilePath, serialized);
     }
 }
