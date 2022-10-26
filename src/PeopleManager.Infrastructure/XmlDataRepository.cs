@@ -1,61 +1,46 @@
-﻿using PeopleManager.Domain.Models;
+﻿using Microsoft.Extensions.Options;
+using PeopleManager.Domain.Exceptions;
+using PeopleManager.Domain.Models;
 using PeopleManager.Domain.Services;
+using PeopleManager.Infrastructure.Options;
+using PeopleManager.Infrastructure.Services.Serialization;
+using PeopleManager.Infrastructure.Services.TextHandling;
 
 namespace PeopleManager.Infrastructure;
 
-public class XmlDataRepository  : IPeopleRepository
+public class XmlDataRepository : IPeopleRepository
 {
-  
+    private readonly IAsyncDataFileHandler _asyncDataFileHandler;
+    private readonly IDataSerializer<DataStorageModel> _dataSerializer;
+    private XmlDataFileOptions Options { get; }
+
+    string DataFilePath => Environment.ExpandEnvironmentVariables(Options.Path!);
+
+    public XmlDataRepository(IOptions<XmlDataFileOptions> options, IAsyncDataFileHandler asyncDataFileHandler,
+        IDataSerializer<DataStorageModel> dataSerializer)
+    {
+        ValidateOptions(options);
+
+        _asyncDataFileHandler = asyncDataFileHandler;
+        _dataSerializer = dataSerializer;
+        Options = options.Value;
+    }
+
+    private static void ValidateOptions(IOptions<XmlDataFileOptions> options)
+    {
+        if (options.Value is null || string.IsNullOrEmpty(options.Value.Path))
+            throw new PeopleManagerDomainException("No data file path configured");
+    }
 
     public async Task<IEnumerable<Person>> GetPeopleAsync()
     {
-        await Task.Delay(1000);
-
-      var data= new List<Person>()
-        {
-            new Person()
-            {
-                DateOfBirth = new DateOnly(1992, 11, 5),
-                FirstName = "Dominik",
-                LastName = "Twaróg",
-                StreetName = "Piłsudskiego",
-                Town = "Głogów Małopolski",
-                ApartmentNumber = "36",
-                HouseNumber = "26A",
-                PhoneNumber = "518906575",
-                PostalCode = "36-060"
-            },
-            new Person()
-            {
-                DateOfBirth = new DateOnly(1992, 11, 5),
-                FirstName = "Natalia",
-                LastName = "Twaróg",
-                StreetName = "Piłsudskiego",
-                Town = "Głogów Małopolski",
-
-                HouseNumber = "26A",
-                PhoneNumber = "518906575",
-                PostalCode = "36-060"
-            },
-            new Person()
-            {
-                DateOfBirth = new DateOnly(1992, 11, 5),
-                FirstName = "Ignacy",
-                LastName = "Twaróg",
-                StreetName = "Piłsudskiego",
-                Town = "Głogów Małopolski",
-                ApartmentNumber = "36",
-                HouseNumber = "26A",
-                PhoneNumber = "518906575",
-                PostalCode = "36-060"
-            }
-        };
-
-      return data;
+        var rawData = await _asyncDataFileHandler.LoadTextAsync(DataFilePath);
+        return string.IsNullOrEmpty(rawData) ? DataStorageModel.Empty().People : _dataSerializer.Deserialize(rawData).People;
     }
 
-    public async Task SavePeopleAsync(IEnumerable<Person> people)
+    public async Task SavePeopleAsync(List<Person> people)
     {
-        await Task.Delay(2000);
+        var dataStorage = DataStorageModel.Create(people);
+        await _asyncDataFileHandler.FileWriteAsync(DataFilePath, _dataSerializer.Serialize(dataStorage));
     }
 }

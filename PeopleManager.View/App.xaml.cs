@@ -4,6 +4,7 @@ using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PeopleManager.Infrastructure.Helpers;
+using PeopleManager.Infrastructure.Options;
 using PeopleManager.ViewModel.Helpers;
 
 namespace PeopleManager.View
@@ -36,11 +37,11 @@ namespace PeopleManager.View
 
         private void ConfigureServices(IServiceCollection services)
         {
-           // services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
-         
+            services.Configure<XmlDataFileOptions>(Configuration!.GetSection(nameof(XmlDataFileOptions)));
             services.AddTransient(typeof(MainWindow));
-            services.AddInfrastructure();
+            services.AddInfrastructure(Configuration!);
             services.AddViewModel();
+
         }
     }
 }

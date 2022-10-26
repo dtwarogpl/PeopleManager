@@ -36,7 +36,8 @@ namespace PeopleManager.ViewModel
 
             SaveCommand = new AsyncCommand(async () =>
             {
-                await _peopleRepository.SavePeopleAsync(Enumerable.Empty<Person>());
+                var peopleSource = _mapper.Map<List<Person>>(People.ToList());
+                await _peopleRepository.SavePeopleAsync(peopleSource);
                 foreach (var person in People!)
                 {
                     person.CreateSnapShot();
