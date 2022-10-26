@@ -4,25 +4,21 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-       
         xmlns:fa="http://schemas.fontawesome.io/icons/"
-        xmlns:local="clr-namespace:PeopleManager.View"
         xmlns:view="clr-namespace:PeopleManager.View;assembly=PeopleManager.ViewModel"
-        xmlns:validationRules="clr-namespace:PeopleManager.ViewModel.ValidationRules;assembly=PeopleManager.ViewModel"
         xmlns:converters="clr-namespace:PeopleManager.View.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1200"
         d:DataContext="{d:DesignInstance Type=view:DesignTimeViewModel, IsDesignTimeCreatable=True}">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding LoadPeopleAsyncCommand}"/>
+            <i:InvokeCommandAction Command="{Binding LoadPeopleAsyncCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Window.Resources>
 
         <SolidColorBrush
             x:Key="NeedAttentionColor"
-            x:Name="NeedAttentionColor"
             Color="#D33F49" />
 
         <SolidColorBrush
@@ -30,27 +26,18 @@
             Color="#FEFEFF" />
 
         <SolidColorBrush
-            x:Key="TextColor"
-            Color="#262730" />
-
-        <SolidColorBrush
             x:Key="MainColor"
             Color="#FEFEFF" />
-
-        <SolidColorBrush
-            x:Key="SuccessColor"
-            Color="#77BA99">
-        </SolidColorBrush>
 
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:BoolToVisibilityConverterInverted x:Key="BoolToVisibilityConverterInverted" />
 
         <Style TargetType="Button" x:Key="MainBtn">
-            <Setter Property="Width" Value="200"/>
-            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Width" Value="200" />
+            <Setter Property="Margin" Value="5" />
         </Style>
 
-        <Style  TargetType="{x:Type DataGridRow}">
+        <Style TargetType="{x:Type DataGridRow}">
             <Setter Property="MinHeight" Value="25" />
             <Setter Property="FontSize" Value="16" />
             <Setter Property="Background" Value="{StaticResource MainColor}" />
@@ -59,36 +46,38 @@
                 <DataTrigger Binding="{Binding IsCorrupted}" Value="True">
                     <Setter Property="Background" Value="{StaticResource NeedAttentionColor}" />
                     <Setter Property="Foreground" Value="{StaticResource AlertTextColor}" />
-                  
                 </DataTrigger>
-               
-            
+
             </Style.Triggers>
         </Style>
 
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-         
+            <ColumnDefinition Width="*" />
+
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-           
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="0.2*"/>
+
+            <RowDefinition Height="*" />
+            <RowDefinition Height="0.2*" />
         </Grid.RowDefinitions>
-        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2"  Grid.Row="0" Panel.ZIndex="1" Visibility="{Binding LoadPeopleAsyncCommand.Running,Converter={StaticResource BoolToVisibilityConverter}}"/>
-        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2"  Grid.Row="0" Panel.ZIndex="1" Visibility="{Binding DiscardChangesCommand.Running,Converter={StaticResource BoolToVisibilityConverter}}"/>
-        <StackPanel Grid.Row="2" Height="100" Orientation="Horizontal" HorizontalAlignment="Center" >
+        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2" Grid.Row="0" Panel.ZIndex="1"
+                         Visibility="{Binding LoadPeopleAsyncCommand.Running,Converter={StaticResource BoolToVisibilityConverter}}" />
+        <fa:ImageAwesome Icon="Spinner" Spin="True" Width="50" SpinDuration="2" Grid.Row="0" Panel.ZIndex="1"
+                         Visibility="{Binding DiscardChangesCommand.Running,Converter={StaticResource BoolToVisibilityConverter}}" />
+        <StackPanel Grid.Row="2" Height="100" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Style="{StaticResource MainBtn}" Command="{Binding DiscardChangesCommand}">
                 <Button.Content>
                     <StackPanel Orientation="Vertical">
-                        <StackPanel Visibility="{Binding DiscardChangesCommand.Running,
+                        <StackPanel
+                            Visibility="{Binding DiscardChangesCommand.Running,
     Converter={StaticResource BoolToVisibilityConverterInverted}}">
-                            <fa:ImageAwesome Icon="Remove" Margin="10,0,10,0"  Width="20" SpinDuration="2"    />
+                            <fa:ImageAwesome Icon="Remove" Margin="10,0,10,0" Width="20" SpinDuration="2" />
                             <TextBlock>Discard Changes</TextBlock>
                         </StackPanel>
-                        <fa:ImageAwesome Icon="Spinner" Margin="10,0,0,0"  Spin="True" Width="20" SpinDuration="2"  Visibility="{Binding DiscardChangesCommand.Running,
+                        <fa:ImageAwesome Icon="Spinner" Margin="10,0,0,0" Spin="True" Width="20" SpinDuration="2"
+                                         Visibility="{Binding DiscardChangesCommand.Running,
     Converter={StaticResource BoolToVisibilityConverter}}" />
 
                     </StackPanel>
@@ -99,12 +88,14 @@
             <Button Style="{StaticResource MainBtn}" Command="{Binding SaveCommand}">
                 <Button.Content>
                     <StackPanel Orientation="Vertical">
-                        <StackPanel Visibility="{Binding SaveCommand.Running,
+                        <StackPanel
+                            Visibility="{Binding SaveCommand.Running,
     Converter={StaticResource BoolToVisibilityConverterInverted}}">
-                            <fa:ImageAwesome Icon="FloppyOutline" Margin="10,0,10,0"  Width="20" SpinDuration="2"    />
+                            <fa:ImageAwesome Icon="FloppyOutline" Margin="10,0,10,0" Width="20" SpinDuration="2" />
                             <TextBlock>Save</TextBlock>
                         </StackPanel>
-                        <fa:ImageAwesome Icon="Spinner" Margin="10,0,0,0"  Spin="True" Width="20" SpinDuration="2"  Visibility="{Binding SaveCommand.Running,
+                        <fa:ImageAwesome Icon="Spinner" Margin="10,0,0,0" Spin="True" Width="20" SpinDuration="2"
+                                         Visibility="{Binding SaveCommand.Running,
     Converter={StaticResource BoolToVisibilityConverter}}" />
 
                     </StackPanel>
@@ -114,11 +105,13 @@
             </Button>
         </StackPanel>
 
-        <DataGrid Grid.Row="0" SelectionMode="Single" ItemsSource="{Binding People}" AutoGenerateColumns="false" >
+        <DataGrid Grid.Row="0" SelectionMode="Single" ItemsSource="{Binding People}" AutoGenerateColumns="false">
             <DataGrid.RowDetailsTemplate>
                 <DataTemplate>
-                    <TextBlock Foreground="{StaticResource AlertTextColor}" FontSize="12"  Text="{Binding ModelValidationErrors}" TextWrapping="Wrap"
-                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding IsCorrupted,Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    <TextBlock Foreground="{StaticResource AlertTextColor}" FontSize="12"
+                               Text="{Binding ModelValidationErrors}" TextWrapping="Wrap"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                               Visibility="{Binding IsCorrupted,Converter={StaticResource BoolToVisibilityConverter}}" />
                 </DataTemplate>
             </DataGrid.RowDetailsTemplate>
 
@@ -126,128 +119,117 @@
 
                 <DataGridTextColumn Header="First Name">
                     <DataGridTextColumn.Binding>
-                        <Binding Path="FirstName" 
-                                 NotifyOnTargetUpdated="True" 
-                                 UpdateSourceTrigger="PropertyChanged" 
-                                 Mode="TwoWay" 
-                                 ValidatesOnDataErrors="True">
-                          
-                        </Binding>
+                        <Binding Path="FirstName"
+                                 NotifyOnTargetUpdated="True"
+                                 UpdateSourceTrigger="PropertyChanged"
+                                 Mode="TwoWay"
+                                 ValidatesOnDataErrors="True" />
                     </DataGridTextColumn.Binding>
-                 
+
                 </DataGridTextColumn>
 
                 <DataGridTextColumn Header="Last Name">
                     <DataGridTextColumn.Binding>
-                        <Binding Path="LastName" 
-                                 NotifyOnTargetUpdated="True" 
-                                 UpdateSourceTrigger="PropertyChanged" 
-                                 Mode="TwoWay" 
-                                 ValidatesOnDataErrors="True">
-                        </Binding>
+                        <Binding Path="LastName"
+                                 NotifyOnTargetUpdated="True"
+                                 UpdateSourceTrigger="PropertyChanged"
+                                 Mode="TwoWay"
+                                 ValidatesOnDataErrors="True" />
                     </DataGridTextColumn.Binding>
-                   
+
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Street Name">
                     <DataGridTextColumn.Binding>
-                        <Binding Path="StreetName" 
-                                 NotifyOnTargetUpdated="True" 
-                                 UpdateSourceTrigger="PropertyChanged" 
-                                 Mode="TwoWay" 
-                                 ValidatesOnDataErrors="True">
-                        </Binding>
+                        <Binding Path="StreetName"
+                                 NotifyOnTargetUpdated="True"
+                                 UpdateSourceTrigger="PropertyChanged"
+                                 Mode="TwoWay"
+                                 ValidatesOnDataErrors="True" />
                     </DataGridTextColumn.Binding>
-                  
+
                 </DataGridTextColumn>
 
                 <DataGridTextColumn Header="House Number">
                     <DataGridTextColumn.Binding>
-                        <Binding Path="HouseNumber" 
-                                 NotifyOnTargetUpdated="True" 
-                                 UpdateSourceTrigger="PropertyChanged" 
-                                 Mode="TwoWay" 
-                                 ValidatesOnDataErrors="True">
-                           
-                        </Binding>
+                        <Binding Path="HouseNumber"
+                                 NotifyOnTargetUpdated="True"
+                                 UpdateSourceTrigger="PropertyChanged"
+                                 Mode="TwoWay"
+                                 ValidatesOnDataErrors="True" />
                     </DataGridTextColumn.Binding>
-                 
+
                 </DataGridTextColumn>
 
                 <DataGridTextColumn Header="Apartment">
                     <DataGridTextColumn.Binding>
-                        <Binding Path="ApartmentNumber" 
-                                 NotifyOnTargetUpdated="True" 
-                                 UpdateSourceTrigger="PropertyChanged" 
-                                 Mode="TwoWay" 
-                                 ValidatesOnDataErrors="True">
-                        </Binding>
+                        <Binding Path="ApartmentNumber"
+                                 NotifyOnTargetUpdated="True"
+                                 UpdateSourceTrigger="PropertyChanged"
+                                 Mode="TwoWay"
+                                 ValidatesOnDataErrors="True" />
                     </DataGridTextColumn.Binding>
                 </DataGridTextColumn>
 
                 <DataGridTextColumn Header="Postal Code">
                     <DataGridTextColumn.Binding>
-                        <Binding Path="PostalCode" 
-                                 NotifyOnTargetUpdated="True" 
-                                 UpdateSourceTrigger="PropertyChanged" 
-                                 Mode="TwoWay" 
-                                 ValidatesOnDataErrors="True">
-                           
-                        </Binding>
+                        <Binding Path="PostalCode"
+                                 NotifyOnTargetUpdated="True"
+                                 UpdateSourceTrigger="PropertyChanged"
+                                 Mode="TwoWay"
+                                 ValidatesOnDataErrors="True" />
                     </DataGridTextColumn.Binding>
-                  
+
                 </DataGridTextColumn>
 
                 <DataGridTextColumn Header="Town">
                     <DataGridTextColumn.Binding>
-                        <Binding Path="Town" 
-                                 NotifyOnTargetUpdated="True" 
-                                 UpdateSourceTrigger="PropertyChanged" 
-                                 Mode="TwoWay" 
-                                 ValidatesOnDataErrors="True">
-                           
-                        </Binding>
+                        <Binding Path="Town"
+                                 NotifyOnTargetUpdated="True"
+                                 UpdateSourceTrigger="PropertyChanged"
+                                 Mode="TwoWay"
+                                 ValidatesOnDataErrors="True" />
                     </DataGridTextColumn.Binding>
-                   
+
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Phone Number">
                     <DataGridTextColumn.Binding>
-                        <Binding Path="PhoneNumber" 
-                                 NotifyOnTargetUpdated="True" 
-                                 UpdateSourceTrigger="PropertyChanged" 
-                                 Mode="TwoWay" 
-                                 ValidatesOnDataErrors="True">
-                           
-                        </Binding>
+                        <Binding Path="PhoneNumber"
+                                 NotifyOnTargetUpdated="True"
+                                 UpdateSourceTrigger="PropertyChanged"
+                                 Mode="TwoWay"
+                                 ValidatesOnDataErrors="True" />
                     </DataGridTextColumn.Binding>
-                   
+
                 </DataGridTextColumn>
 
-                <DataGridTemplateColumn Header ="Date of birth">
+                <DataGridTemplateColumn Header="Date of birth">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Path=DateOfBirth,StringFormat=d}"></TextBlock>
+                            <TextBlock Text="{Binding Path=DateOfBirth,StringFormat=d}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                    <DataGridTemplateColumn.CellEditingTemplate> 
+                    <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <DatePicker SelectedDate="{Binding Path=DateOfBirth, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }">
-                            </DatePicker>
+                            <DatePicker
+                                SelectedDate="{Binding Path=DateOfBirth, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTextColumn Header="Age" Binding="{Binding Path=Age}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Age" Binding="{Binding Path=Age}" />
 
                 <DataGridTemplateColumn Header="Options" Width="70">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel>
-                                <Button Width="20" 
-                                    Command="{Binding Path=DeleteCommand,       
+                                <Button Width="20"
+                                        Command="{Binding Path=DeleteCommand,       
  RelativeSource= {RelativeSource FindAncestor,
-  AncestorType={x:Type DataGrid}}}" HorizontalAlignment="Center" VerticalAlignment="Center">
+  AncestorType={x:Type DataGrid}}}"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <Button.Content>
-                                        <fa:ImageAwesome  Icon="Trash" Margin="2"   SpinDuration="2" Foreground="{StaticResource  NeedAttentionColor}"    />
+                                        <fa:ImageAwesome Icon="Trash" Margin="2" SpinDuration="2"
+                                                         Foreground="{StaticResource  NeedAttentionColor}" />
                                     </Button.Content>
                                 </Button>
                             </StackPanel>
