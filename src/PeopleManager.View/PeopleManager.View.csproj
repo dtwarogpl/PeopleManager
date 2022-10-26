@@ -27,8 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PeopleManager.Domain\PeopleManager.Domain.csproj" />
+    <ProjectReference Include="..\PeopleManager.Infrastructure\PeopleManager.Infrastructure.csproj" />
     <ProjectReference Include="..\PeopleManager.ViewModel\PeopleManager.ViewModel.csproj" />
-    <ProjectReference Include="..\src\PeopleManager.Infrastructure\PeopleManager.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

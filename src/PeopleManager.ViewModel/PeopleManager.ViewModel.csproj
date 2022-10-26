@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\PeopleManager.Domain\PeopleManager.Domain.csproj" />
+    <ProjectReference Include="..\PeopleManager.Domain\PeopleManager.Domain.csproj" />
   </ItemGroup>
 
 </Project>
