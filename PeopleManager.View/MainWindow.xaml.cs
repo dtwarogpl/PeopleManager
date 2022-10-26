@@ -6,15 +6,10 @@ using PeopleManager.ViewModel.Abstractions;
 {
     public partial class MainWindow : Window
     {
-        private readonly IViewModel _viewModel;
-
         public MainWindow(IViewModel viewModel)
         {
-            _viewModel = viewModel;
             InitializeComponent();
             DataContext = viewModel;
         }
-
-      
     }
 }
