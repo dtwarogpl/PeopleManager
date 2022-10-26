@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using AutoMapper;
+using Bogus.DataSets;
 using PeopleManager.Application;
 
 using PeopleManager.Domain.Models;
@@ -32,36 +34,33 @@ namespace PeopleManager.ViewModel
             _peopleRepository = repository;
             _mapper = mapper;
 
-            LoadPeopleAsyncCommand = new AsyncCommand(async () => { await LoadPeopleAsync(); }, ()=>true);
+            LoadPeopleAsyncCommand = new AsyncCommand(async () =>
+            {
+                await LoadPeopleAsync();
+            }, ()=>true);
 
             SaveCommand = new AsyncCommand(async () =>
             {
                 var peopleSource = _mapper.Map<List<Person>>(People.ToList());
                 await _peopleRepository.SavePeopleAsync(peopleSource);
-                foreach (var person in People!)
-                {
-                    person.CreateSnapShot();
-                }
+               
+                SnapShot = new ObservableCollection<PersonDto>(People.Select(x=>x.Duplicate()));
             },()=>
             {
-                if (CurrentStateIsEqualToSnapShoot()) return false;
-
-                var somethingMidfied = People.Any(x => x.HasBeenModified());
+                
                 var allHaveGoodState = People.All(y => !y.IsCorrupted);
-
-                var SomethingHasBeenAdded = Modified.Count>0;
-                var SomethingDeleted = Removed.Count > 0;
-
-                return allHaveGoodState && (somethingMidfied || SomethingHasBeenAdded || SomethingDeleted);
+                return allHaveGoodState && !CurrentStateIsEqualToSnapShoot();
             });
 
             DiscardChangesCommand = new AsyncCommand(async () =>
             {
+                
                 await LoadPeopleAsync();
             }, () =>
             {
-                if (CurrentStateIsEqualToSnapShoot()) return false;
-                return (People.Any(x => x.HasBeenModified()) || Modified.Count > 0 || Removed.Count>0);
+               
+                //if (CurrentStateIsEqualToSnapShoot()) return false;
+                return !CurrentStateIsEqualToSnapShoot();
             });
 
             DeletePersonCommand = new AsyncCommand(async () =>
@@ -73,52 +72,17 @@ namespace PeopleManager.ViewModel
 
         private bool CurrentStateIsEqualToSnapShoot()
         {
-            return People.SequenceEqual(SnapShot);
+            return People.SequenceEqual(SnapShot, new PersonEqualityComparer());
         }
 
         public ObservableCollection<PersonDto> SnapShot = new();
         private async Task LoadPeopleAsync()
         {
-            SnapShot.Clear();
-            People?.Clear();
-            Modified.Clear();
+          
             var data = await _peopleRepository.GetPeopleAsync();
-            var peopleSource = _mapper.Map<List<PersonDto>>(data.ToList());
-            People = new ObservableCollection<PersonDto>(peopleSource);
-            SnapShot = new ObservableCollection<PersonDto>(peopleSource);
-            foreach (var person in People)
-            {
-                person.CreateSnapShot();
-            }
-
-            People.CollectionChanged += CollectionChangedMethod;
-           
-        }
-
-        private List<PersonDto> Modified = new();
-        private List<PersonDto> Removed = new();
-     
-
-        private void CollectionChangedMethod(object? sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add when e.NewItems is null:
-                    return;
-                case NotifyCollectionChangedAction.Add:
-                    Modified.AddRange(e.NewItems!.Cast<PersonDto>().Where(item => item is not null));
-                    break;
-                case NotifyCollectionChangedAction.Remove when e.OldItems is null:
-                    return;
-                case NotifyCollectionChangedAction.Remove:
-                    Removed.AddRange(e.OldItems!.Cast<PersonDto>().Where(item => item is not null));
-                    break;
-            }
-        }
-
-        private void LoadItems(NotifyCollectionChangedEventArgs e, List<PersonDto> destination)
-        {
-            destination.AddRange(e.NewItems!.Cast<PersonDto>().Where(item => item is not null));
+            var enumerable = data.ToList();
+            People = new ObservableCollection<PersonDto>(_mapper.Map<List<PersonDto>>(enumerable.ToList()));
+            SnapShot = new ObservableCollection<PersonDto>(_mapper.Map<List<PersonDto>>(enumerable.ToList()));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -138,7 +102,6 @@ namespace PeopleManager.ViewModel
                 OnPropertyChanged();
             }
         }
-
 
         public IAsyncCommand LoadPeopleAsyncCommand { get; private set; }
         public IAsyncCommand SaveCommand { get; private set; }
@@ -161,5 +124,30 @@ namespace PeopleManager.ViewModel
                 OnPropertyChanged();
             }
         }
+    }
+
+    public class PersonEqualityComparer : IEqualityComparer<PersonDto>
+    {
+        public bool Equals(PersonDto x, PersonDto y)
+        {
+            return x.HasSamePropertiesAs(y);
+        }
+
+        public int GetHashCode(PersonDto obj)
+        {
+            var hashCode = new HashCode();
+            hashCode.Add(obj.ApartmentNumber);
+            hashCode.Add(obj.DateOfBirth);
+            hashCode.Add(obj.FirstName);
+            hashCode.Add(obj.HouseNumber);
+            hashCode.Add(obj.LastName);
+            hashCode.Add(obj.PhoneNumber);
+            hashCode.Add(obj.PostalCode);
+            hashCode.Add(obj.StreetName);
+            hashCode.Add(obj.Town);
+            return hashCode.ToHashCode();
+        }
+
+     
     }
 }

@@ -114,6 +114,30 @@ public class PersonDto : ObservableDto
         return age;
     }
 
+   
+
+    public bool HasSamePropertiesAs(PersonDto other)
+    {
+        return _apartmentNumber == other._apartmentNumber && _dateOfBirth.Equals(other._dateOfBirth) && _firstName == other._firstName && _houseNumber == other._houseNumber && _lastName == other._lastName && _phoneNumber == other._phoneNumber && _postalCode == other._postalCode && _streetName == other._streetName && _town == other._town;
+    }
+
+   
+
+    public  PersonDto Duplicate()
+    {
+       return new PersonDto()
+        {
+            FirstName = FirstName,
+            LastName = LastName,
+            StreetName = StreetName,
+            HouseNumber = HouseNumber,
+            ApartmentNumber = ApartmentNumber,
+            PostalCode = PostalCode,
+            Town = Town,
+            PhoneNumber = PhoneNumber,
+            DateOfBirth = DateOfBirth
+        };
+    }
     private IEnumerable<ValidationResult> GetValidationResults()
     {
         var domainModel = new Person
